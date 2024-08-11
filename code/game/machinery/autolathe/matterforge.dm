@@ -73,11 +73,19 @@
 	return files
 
 /obj/machinery/matter_nanoforge/ui_assets(mob/user)
+	if(user?.client?.get_preference_value(/datum/client_preference/tgui_toaster) == GLOB.PREF_YES)
+		return list()
 	return list(
-		get_asset_datum(/datum/asset/simple/design_icons)
+		get_asset_datum(/datum/asset/spritesheet_batched/design_icons)
 	)
 
 /obj/machinery/matter_nanoforge/ui_interact(mob/user, datum/tgui/ui)
+	if(!check_user(user))
+		return
+
+	if(!design_list?.len)
+		get_designs()
+
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "Matterforge", name)
@@ -128,7 +136,7 @@
 
 				if(params["several"])
 					amount = input("How many \"[picked_design.id]\" you want to print ?", "Print several") as null|num
-					if(!CanUseTopic(usr) || !(picked_design in design_list))
+					if(!CanUseTopic(usr) || !(picked_design in design_list) || amount == null)
 						return
 
 				queue_design(picked_design, amount)
@@ -146,13 +154,13 @@
 			if(ind >= 2 && ind <= queue.len)
 				queue.Swap(ind, ind - 1)
 			. = TRUE
-		
+
 		if("move_down_queue")
 			var/ind = text2num(params["index"])
 			if(ind >= 1 && ind <= queue.len-1)
 				queue.Swap(ind, ind + 1)
 			. = TRUE
-	
+
 		if("abort_print")
 			abort()
 			. = TRUE
@@ -184,6 +192,16 @@
 
 	return data
 
+/obj/machinery/matter_nanoforge/ui_static_data(mob/user)
+	var/list/data = list()
+
+	var/list/L = list()
+	for(var/datum/design/d in design_list)
+		L.Add(list(d.nano_ui_data))
+	data["designs"] = L
+
+	return data
+
 /obj/machinery/matter_nanoforge/ui_data(mob/user)
 	var/list/data = list()
 
@@ -195,11 +213,6 @@
 	data["unfolded"] = unfolded
 
 	data |= materials_data()
-
-	var/list/L = list()
-	for(var/datum/design/d in design_list)
-		L.Add(list(d.nano_ui_data))
-	data["designs"] = L
 
 	if(current_design)
 		data["current"] = current_design.nano_ui_data
@@ -253,6 +266,9 @@
 	if(default_part_replacement(I, user))
 		return
 
+	if(!check_user(user))
+		return
+
 	GET_COMPONENT_FROM(comp, /datum/component/inspiration, I)
 	if(comp && comp.get_power() > 0)
 		if(power_source)
@@ -260,6 +276,7 @@
 		user.drop_item(I)
 		I.forceMove(src)
 		power_source = I
+		update_static_data_for_all_viewers()
 		return
 
 	if(power_source)
@@ -270,6 +287,9 @@
 		to_chat(user, SPAN_WARNING("\The [src] does not have any artifact powering it."))
 
 /obj/machinery/matter_nanoforge/proc/eat(mob/living/user, obj/item/eating)
+	if(!check_user(user))
+		return FALSE
+
 	var/used_sheets
 
 	if(!eating && istype(user))
@@ -333,6 +353,7 @@
 			used_sheets = (added_mats / artifact.get_power()) / lst[mat]
 		else
 			used_sheets = total_material_gained[mat]
+		gained_mats += added_mats
 	if(istype(eating, /obj/item/stack))
 		var/obj/item/stack/stack = eating
 		to_chat(user, SPAN_NOTICE("You create [gained_mats] Compressed Matter from [stack.singular_name]\s in the [src]."))
@@ -401,7 +422,7 @@
 		next_file()
 
 	update_icon()
-	SSnano.update_uis(src)
+	SStgui.update_uis(src)
 
 
 
@@ -518,12 +539,12 @@
 	return ..()
 
 /obj/machinery/matter_nanoforge/update_icon()
-	overlays.Cut()
+	cut_overlays()
 
 	icon_state = initial(icon_state)
 
 	if(panel_open)
-		overlays.Add(image(icon, "[icon_state]_panel"))
+		add_overlay(image(icon, "[icon_state]_panel"))
 
 	if(working) // if paused, work animation looks awkward.
 		if(paused || error)
@@ -611,5 +632,6 @@
 /obj/machinery/matter_nanoforge/proc/check_user(mob/user)
 	if(user.stats?.getPerk(PERK_HANDYMAN))
 		return TRUE
+	design_list = list()
 	to_chat(user, SPAN_NOTICE("You don't know how to make the [src] work, you lack the training or mechanical skill."))
 	return FALSE

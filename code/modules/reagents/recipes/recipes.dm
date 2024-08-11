@@ -117,6 +117,11 @@
 	catalysts = list("plasma" = 5)
 	result_amount = 2
 
+/datum/chemical_reaction/trypsin
+	result = "trypsin"
+	required_reagents = list("carbon" = 1, "sacid" = 1, "dermaline" = 1)
+	result_amount = 1
+
 /datum/chemical_reaction/leporazine
 	result = "leporazine"
 	required_reagents = list("silicon" = 1, "copper" = 1)
@@ -411,20 +416,6 @@
 /datum/chemical_reaction/compressedjelly/on_reaction(var/datum/reagents/holder, var/created_volume)
 	var /obj/item/slime_potion/slimes_reviver/R = new /obj/item/slime_potion/slimes_reviver
 	R.loc = get_turf(holder.my_atom)
-
-/* Centrifuge */
-
-/datum/chemical_reaction/curing
-	result = "antibodies"
-	required_reagents = list("blood" = 1)
-	result_amount = 1
-	reaction_rate = REACTION_RATE(0.3)
-	rotation_required = TRUE
-	supports_decomposition_by_electrolysis = FALSE
-	mix_message = null
-
-/datum/chemical_reaction/curing/send_data(datum/reagents/T)
-	return list("antibodies" = T.get_data("blood")["antibodies"])
 
 /* Solidification */
 
@@ -965,6 +956,35 @@
 	required_reagents = list("vodka" = 10, "concentrated-carpotoxin" = 1)
 	result_amount = 10
 
+/datum/chemical_reaction/nutriment_1
+	result = "nutriment"
+	required_reagents = list("bicaridine" = 1, "monocaridine" = 1)
+	result_amount = 2
+
+/datum/chemical_reaction/nutriment_2
+	result = "nutriment"
+	required_reagents = list("dexalin" = 1, "quintalin" = 1)
+	result_amount = 2
+
+/datum/chemical_reaction/nutriment_3
+	result = "nutriment"
+	required_reagents = list("dexalinp" = 1, "quintalin" = 1)
+	result_amount = 2
+
+/datum/chemical_reaction/nutriment_4
+	result = "nutriment"
+	required_reagents = list("moon water" = 1, "kelotane" = 1)
+	result_amount = 2
+
+/datum/chemical_reaction/nutriment_5
+	result = "nutriment"
+	required_reagents = list("moon water" = 1, "dermaline" = 1)
+	result_amount = 2
+
+/datum/chemical_reaction/nutriment_6
+	result = "nutriment"
+	required_reagents = list("anti_toxin" = 1, "lg_anti_toxin" = 1)
+	result_amount = 2
 
 /* FBP "medicine" */
 

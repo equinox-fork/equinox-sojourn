@@ -1,8 +1,16 @@
-import { useBackend, useSharedState } from '../backend';
-import { Box, Button, LabeledList, Section, Stack } from '../components';
-import { Window } from '../layouts';
 import { BooleanLike } from '../../common/react';
 import { decodeHtmlEntities } from '../../common/string';
+import { useBackend, useSharedState } from '../backend';
+import {
+  Box,
+  Button,
+  LabeledList,
+  Section,
+  Stack,
+  VirtualList,
+} from '../components';
+import { Window } from '../layouts';
+import { SearchBar } from './Fabrication/SearchBar';
 import {
   AutolatheItem,
   AutolatheQueue,
@@ -11,15 +19,14 @@ import {
   LoadedMaterials,
   MaterialData,
 } from './Matterforge';
-import { SearchBar } from './Fabrication/SearchBar';
 
 export type ReagentData = {
   container: BooleanLike;
   reagents: { name: string; amount: number }[];
 };
 
-export const Reagents = (props: ReagentData, context) => {
-  const { act } = useBackend(context);
+export const Reagents = (props: ReagentData) => {
+  const { act } = useBackend();
 
   const { container, reagents } = props;
 
@@ -35,7 +42,8 @@ export const Reagents = (props: ReagentData, context) => {
             onClick={() => act('eject_beaker')}
           />
         ) : null
-      }>
+      }
+    >
       {container ? (
         reagents.length > 0 ? (
           <LabeledList>
@@ -63,8 +71,8 @@ export type DiskData = {
   };
 };
 
-export const Disk = (props: DiskData, context) => {
-  const { act } = useBackend(context);
+export const Disk = (props: DiskData) => {
+  const { act } = useBackend();
 
   const { disk } = props;
 
@@ -84,7 +92,8 @@ export const Disk = (props: DiskData, context) => {
                 }}
               />
             ) : null
-          }>
+          }
+        >
           {disk ? decodeHtmlEntities(disk.name) : 'Not inserted.'}
         </LabeledList.Item>
         {disk && disk.license > 0 ? (
@@ -116,8 +125,8 @@ type Data = MaterialData &
     show_category: string;
   };
 
-export const Autolathe = (props, context) => {
-  const { act, data } = useBackend<Data>(context);
+export const Autolathe = (props) => {
+  const { act, data } = useBackend<Data>();
 
   const {
     have_design_selector,
@@ -139,13 +148,10 @@ export const Autolathe = (props, context) => {
     special_actions,
     categories,
     show_category,
+    mat_efficiency,
   } = data;
 
-  const [searchText, setSearchText] = useSharedState(
-    context,
-    'search_text',
-    ''
-  );
+  const [searchText, setSearchText] = useSharedState('search_text', '');
 
   return (
     <Window width={720} height={700}>
@@ -183,7 +189,8 @@ export const Autolathe = (props, context) => {
                         icon={action.icon}
                         onClick={() => {
                           act('special_action', { action: action.action });
-                        }}>
+                        }}
+                      >
                         {action.name}
                       </Button>
                     </Stack.Item>
@@ -195,14 +202,15 @@ export const Autolathe = (props, context) => {
           {categories ? (
             <Stack.Item>
               <Section>
-                <Stack>
+                <Stack fill wrap justify="center" align="center">
                   {categories.map((category) => (
-                    <Stack.Item key={category}>
+                    <Stack.Item key={category} mb={0.5} mt={0.5}>
                       <Button
                         selected={category === show_category}
                         onClick={() =>
                           act('switch_category', { category: category })
-                        }>
+                        }
+                      >
                         {category}
                       </Button>
                     </Stack.Item>
@@ -217,7 +225,7 @@ export const Autolathe = (props, context) => {
                 <Stack.Item grow height="100%">
                   {have_design_selector ? (
                     <Section title="Recipes" fill>
-                      <Box style={{ 'padding-bottom': '8px' }}>
+                      <Box style={{ paddingBottom: '8px' }}>
                         <SearchBar
                           searchText={searchText}
                           onSearchTextChanged={setSearchText}
@@ -226,31 +234,42 @@ export const Autolathe = (props, context) => {
                       </Box>
                       <Section
                         style={{
-                          'padding-right': '4px',
-                          'padding-bottom': '30px',
+                          paddingRight: '4px',
+                          paddingBottom: '30px',
                         }}
                         fill
-                        scrollable>
+                        scrollable
+                      >
                         <Stack vertical>
-                          {searchText.length > 0
-                            ? designs
-                                .filter((design) =>
-                                  design.name.toLowerCase().includes(searchText)
-                                )
-                                .map((design) => {
+                          <VirtualList>
+                            {searchText.length > 0
+                              ? designs
+                                  .filter((design) =>
+                                    design.name
+                                      .toLowerCase()
+                                      .includes(searchText),
+                                  )
+                                  .map((design) => {
+                                    return (
+                                      <Stack.Item key={design.id + design.name}>
+                                        <AutolatheItem
+                                          design={design}
+                                          mat_efficiency={mat_efficiency}
+                                        />
+                                      </Stack.Item>
+                                    );
+                                  })
+                              : designs.map((design) => {
                                   return (
                                     <Stack.Item key={design.id + design.name}>
-                                      <AutolatheItem design={design} />
+                                      <AutolatheItem
+                                        design={design}
+                                        mat_efficiency={mat_efficiency}
+                                      />
                                     </Stack.Item>
                                   );
-                                })
-                            : designs.map((design) => {
-                                return (
-                                  <Stack.Item key={design.id + design.name}>
-                                    <AutolatheItem design={design} />
-                                  </Stack.Item>
-                                );
-                              })}
+                                })}
+                          </VirtualList>
                         </Stack>
                       </Section>
                     </Section>
@@ -270,6 +289,7 @@ export const Autolathe = (props, context) => {
                     progress={progress}
                     queue={queue}
                     queue_max={queue_max}
+                    mat_efficiency={mat_efficiency}
                   />
                 </Stack.Item>
               ) : null}

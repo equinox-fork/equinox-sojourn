@@ -111,6 +111,18 @@
 		ui = new(user, src, "Autolathe", name)
 		ui.open()
 
+/obj/machinery/autolathe/ui_static_data(mob/user)
+	var/list/data = list()
+
+	var/list/L = list()
+	for(var/d in design_list())
+		var/datum/computer_file/binary/design/design_file = d
+		if(!show_category || design_file.design.category == show_category)
+			L.Add(list(design_file.nano_ui_data()))
+	data["designs"] = L
+
+	return data
+
 /obj/machinery/autolathe/ui_data(mob/user)
 	var/list/data = list()
 
@@ -145,13 +157,6 @@
 	data["special_actions"] = special_actions
 
 	data |= materials_data()
-
-	var/list/L = list()
-	for(var/d in design_list())
-		var/datum/computer_file/binary/design/design_file = d
-		if(!show_category || design_file.design.category == show_category)
-			L.Add(list(design_file.nano_ui_data()))
-	data["designs"] = L
 
 
 	if(current_file)
@@ -198,8 +203,10 @@
 	return data
 
 /obj/machinery/autolathe/ui_assets(mob/user)
+	if(user?.client?.get_preference_value(/datum/client_preference/tgui_toaster) == GLOB.PREF_YES)
+		return list()
 	return list(
-		get_asset_datum(/datum/asset/simple/design_icons)
+		get_asset_datum(/datum/asset/spritesheet_batched/design_icons)
 	)
 
 // Also used by R&D console UI.
@@ -270,7 +277,7 @@
 	ui_interact(user)
 	wires.Interact(user)
 
-/obj/machinery/autolathe/ui_act(action, list/params)
+/obj/machinery/autolathe/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
 	if(.)
 		return
@@ -332,7 +339,7 @@
 
 				if(params["several"])
 					amount = input("How many \"[design_file.design.name]\" you want to print ?", "Print several") as null|num
-					if(!CanUseTopic(usr) || !(design_file in design_list()))
+					if(!CanUseTopic(usr) || !(design_file in design_list()) || amount == null)
 						return FALSE
 
 				queue_design(design_file, amount)
@@ -350,7 +357,7 @@
 			if(ind >= 2 && ind <= queue.len)
 				queue.Swap(ind, ind - 1)
 			. = TRUE
-		
+
 		if("move_down_queue")
 			var/ind = text2num(params["index"])
 			if(ind >= 1 && ind <= queue.len-1)
@@ -359,6 +366,7 @@
 
 		if("switch_category")
 			show_category = params["category"]
+			update_static_data(usr, ui)
 			. = TRUE
 
 /obj/machinery/autolathe/proc/insert_disk(mob/living/user, obj/item/computer_hardware/hard_drive/portable/inserted_disk)
@@ -385,7 +393,7 @@
 	inserted_disk.forceMove(src)
 	disk = inserted_disk
 	to_chat(user, SPAN_NOTICE("You insert \the [inserted_disk] into [src]."))
-	SStgui.update_uis(src)
+	update_static_data_for_all_viewers()
 
 
 /obj/machinery/autolathe/proc/insert_beaker(mob/living/user, obj/item/reagent_containers/glass/beaker)
@@ -453,6 +461,7 @@
 	//Now they will graciously allow you to eject the disk
 	disk.forceMove(drop_location())
 	to_chat(usr, SPAN_NOTICE("You remove \the [disk] from \the [src]."))
+	update_static_data_for_all_viewers()
 
 	if(istype(user) && Adjacent(user))
 		user.put_in_active_hand(disk)
@@ -489,7 +498,7 @@
 	if(!eating && istype(user))
 		eating = user.get_active_hand()
 
-	if(!istype(eating))
+	if(!istype(eating) || QDELETED(eating))
 		return FALSE
 
 	if(stat)
@@ -507,6 +516,10 @@
 
 	if(!length(eating.get_matter()))
 		to_chat(user, SPAN_WARNING("\The [eating] does not contain significant amounts of useful materials and cannot be accepted."))
+		return FALSE
+
+	if(istype(eating, /obj/item/stack/ore))
+		to_chat(user, SPAN_WARNING("\The [eating] can not be accepted do to being unprocessed."))
 		return FALSE
 
 	if(istype(eating, /obj/item/computer_hardware/hard_drive/portable))

@@ -49,7 +49,7 @@
 	icon_state = "naniteskinweave"
 	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
 
-/datum/perk/nanite_power/nanite_armor/assign(mob/living/carbon/human/H)
+/datum/perk/nanite_power/nanite_armor/assign(mob/living/L)
 	..()
 	holder.maxHealth += 40
 	holder.health += 40
@@ -176,7 +176,6 @@
 						/obj/item/ammo_magazine/ammobox/heavy_rifle_408/hv,
 						/obj/item/ammo_magazine/ammobox/shotgun/flashshells, //holds 70 shells, its a map item not meant to be common
 						/obj/item/ammo_magazine/ammobox/shotgun/biomatter,
-						/obj/item/ammo_magazine/ammobox/shotgun/payload,
 						/obj/item/ammo_magazine/ammobox/shotgun/incendiary,
 						/obj/item/ammo_magazine/ammobox/shotgun/scrap_beanbag,
 						/obj/item/ammo_magazine/ammobox/shotgun/scrap_pellet,

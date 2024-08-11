@@ -23,7 +23,7 @@
 	. = ..()
 	AddRadSource(src, 2, 4) // Values taken from the process proc below
 	set_light(1.5 ,1, "#00FF7F")
-	addtimer(CALLBACK(GLOBAL_PROC, .proc/qdel, src), 120 SECONDS)
+	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(qdel), src), 120 SECONDS)
 
 /obj/effect/decal/cleanable/greenglow/Process()
 	. = ..()
@@ -36,7 +36,7 @@
 	. = ..()
 	for(var/mob/living/carbon/l in range(4))
 		if(prob(25))
-			to_chat(src, SPAN_WARNING("The air begins to feel warm."))
+			to_chat(src, SPAN_WARNING("The air begins to feel warm, accompanied by a hideous aroma."))	//Equinox edit: makes the danger more obvious
 		l.apply_effect(0.5, IRRADIATE) //we spit out THREE of these.
 
 /obj/effect/decal/cleanable/dirt
@@ -144,7 +144,9 @@
 
 /obj/effect/decal/cleanable/greenglow/bile
 	name = "glowing bile"
-	desc = "A small puddle of glowing green bile, it utterly reeks. Just being near it makes you feel a bit warmer."
+	desc = "A small puddle of glowing green bile, it utterly reeks. Just being near it makes you feel a bit warmer. It appears to be highly volatile and is slowly evaporating away." //Equinox edit: Less hidden mechanics, more documented information
+	icon = 'icons/effects/effects.dmi'		//Equinox edit: Changes the icon to be a lot more obvious
+	icon_state = "toxic_puddle"
 
 
 /obj/effect/decal/cleanable/slimecorpse // Slimepeople remains
@@ -199,7 +201,6 @@
 	icon = 'icons/effects/blood.dmi'
 	icon_state = "vomit_1"
 	random_icon_states = list("vomit_1", "vomit_2", "vomit_3", "vomit_4")
-	var/list/viruses = list()
 	sanity_damage = 0.5
 
 	Destroy()

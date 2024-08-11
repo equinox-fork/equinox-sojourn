@@ -244,6 +244,36 @@
 
 /area/nadezhda/dungeon/outside/prepper/vault/entryway
 
+
+/area/nadezhda/dungeon/outside/prepper/lima
+	name = "Site LIMA-09"
+	icon_state = "erisblue"
+	narrate = "The remnants of an outpost, once a beacon of a great corporation, it now lies in decay"
+	requires_power = TRUE
+
+/area/nadezhda/dungeon/outside/prepper/lima/turret_powered_tile
+	name = "Site LIMA-09"
+	icon_state = "erisred"
+	narrate = "The remnants of an outpost, once a beacon of a great corporation, it now lies in decay"
+	requires_power = TRUE
+
+/area/nadezhda/dungeon/outside/prepper/lima/outside
+	name = "Site LIMA-09"
+	icon_state = "erisgreen"
+	narrate = "The remnants of an outpost, once a beacon of a great corporation, it now lies in decay"
+	dynamic_lighting = FALSE
+
+/area/nadezhda/dungeon/outside/prepper/delta
+	name = "Site DELTA-09"
+	icon_state = "erisblue"
+	narrate = "The remnants of an outpost, once a beacon of a great corporation, it now lies in decay"
+	requires_power = TRUE
+
+/area/nadezhda/dungeon/outside/prepper/delta/turret_powered_tile
+	name = "Site DELTA-09"
+	icon_state = "erisred"
+	requires_power = FALSE
+
 /area/nadezhda/dungeon/outside/monster_cave
 	name = "Monster Cave"
 	icon_state = "erisgreen"
@@ -687,7 +717,7 @@
 	area_light_color = COLOR_LIGHTING_CREW_SOFT
 
 /area/nadezhda/command/merchant
-	name = "\improper Lonestar - CEO's Office"
+	name = "\improper Lonestar - Manager's Office"
 	icon_state = "quart"
 	flags = AREA_FLAG_CRITICAL
 	sound_env = SMALL_SOFTFLOOR
@@ -1524,6 +1554,10 @@ area/nadezhda/medical/medbaymeeting
 /area/nadezhda/quartermaster/mining_outside_doc
 	name = "\improper Cargo Mining Area"
 	icon_state = "mining"
+
+/area/nadezhda/quartermaster/mining_dreg
+	name = "Slate Mining Pad MEH A" //Mining Excation Head
+	icon_state = "erisblue"
 
 /area/nadezhda/quartermaster/disposaldrop
 	name = "Disposal and Delivery"

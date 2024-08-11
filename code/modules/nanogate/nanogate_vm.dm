@@ -1,6 +1,7 @@
 /obj/item/modular_computer/tablet/nanogate
 	action_button_name = "Access Nanogate Interface"
 	icon_state = "generic"
+	icon_state_unpowered = "generic"
 	screen_light_range = 0 //So our nanogate users don't look like they work for the federal government
 	screen_light_strength = 0
 	var/obj/item/organ/internal/nanogate/linked_nanogate
@@ -16,10 +17,14 @@
 	desc = "A highly advanced satellite uplink that works anywhere on the planet."
 	ethernet = TRUE //Unlimited connection range.
 
-/obj/item/modular_computer/tablet/nanogate/can_interact(mob/user)
+/obj/item/modular_computer/tablet/nanogate/ui_state(mob/user)
+	return GLOB.deep_inventory_state
+
+// We have to override this because there's really stupid shitcode in /atom/ui_status that checks Adjacent ignoring UI_state completely
+/obj/item/modular_computer/tablet/nanogate/ui_status(mob/user, datum/ui_state/state)
 	if(linked_nanogate.status & ORGAN_BROKEN)
-		return FALSE
-	..()
+		return UI_CLOSE
+	return state.can_use_topic(src, user)
 
 //Currently it's a slightly fancy tablet but nothing super special.
 //TODO: Make variants for each type of nanogate.
