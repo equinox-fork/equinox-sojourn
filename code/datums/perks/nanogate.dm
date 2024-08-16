@@ -14,7 +14,7 @@
 	desc = "You configure your nanite matrix to begin aiding in your natural healing."
 	icon_state = "naniteregeneration"
 	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
-	var/regen_rate = 0.5 //This seems low but this is per human handle_chemicals_in_body meaning this is rather robust
+	var/regen_rate = 0.7 //This seems low but this is per human handle_chemicals_in_body meaning this is rather robust
 	emped_message = "You feel an uncomfortable tingling numbness throughout your entire body, like a limb that has just gone to sleep."
 	emped_end_message = "The tingling stops as your nanogate informs you that it has restored its regenerative nanites."
 
@@ -36,6 +36,7 @@
 	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
 	emped_message = "You feel your legs cramp as your nanite-augmented muscles seize."
 	emped_end_message = "The pain in your legs fades as mobility returns to your muscles."
+	var/speedup = 0.3
 
 /datum/perk/nanite_power/nanite_muscle/on_emp(nano, severity)
 	if(severity) //Let's NOT divide by any zeroes!

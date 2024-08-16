@@ -1,9 +1,9 @@
 // The powers here are centered around upgrading the user.
 /*
 List of powers in this page :
-- Regeneration : Give the user a perk that constantly heal himself at a very slow rate defined in the perk itself.
-- Speed Booster : Give the user a perk that make him move faster, the speed increase being defined in the perk itself.
-- Armor Upgrade : Give the user a perk that reduce damage, again the precise number is defined in the perk given.
+- Regeneration : Give the user a perk that constantly heal himself at a very slow rate based on the amount of points spent
+- Speed Booster : Give the user a perk that make him move faster, the speed increase based on the amount of points spent
+- Armor Upgrade : Give the user a perk that increases max hp, again the precise number is defined in the perk given.
 - Chemical Injection : Allow the user to choose a type of nanite chem to inject himself, then give him a perk that will do the injection when the user want.
 - Tool/Gun Mods : Give the user a modification that they chose from a list. The only reusable power.
 - Nanite Ammo : Give the user a perk that can spawn an ammo box of a specified type every 30 minutes. Delay defined in the perk itself.
@@ -12,17 +12,23 @@ List of powers in this page :
 // Give the user a perk that constantly heal a tiny bit of damage.
 /mob/living/carbon/human/proc/nanite_regen()
 	set category = "Nanogate Powers"
-	set name = "Nanite Regeneration (7)"
-	set desc = "Spend a large portion of your nanites to restore and repair your body by enhancing your natural healing."
+	set name = "Nanite Regeneration" //0.1hp/tick per nanite point
+	set desc = "Spend a variable portion of your nanites to restore and repair your body by enhancing your natural healing."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
 	if(!organ)
 		return
 
-	if(!stats.getPerk(PERK_NANITE_REGEN)) // Do they already have the bot?
-		if(organ.pay_power_cost(7))
+	if(!stats.getPerk(PERK_NANITE_REGEN)) // Do they already have the perk?
+		var/variable_cost = input("How many points would you like to spend on nanite regeneration? (0.1hp/tick per point, max of 10)", "Assign nanites") as null|num
+		if((variable_cost > 10) || (variable_cost < 1))
+			to_chat(src, "Invalid nanite amount!")
+			return
+		if(organ.pay_power_cost(variable_cost))
 			to_chat(src, "You permanently assign some of your nanites to repairing your body.")
 			stats.addPerk(PERK_NANITE_REGEN)
+			var/datum/perk/nanite_power/nanite_regen/NR = stats.getPerk(PERK_NANITE_REGEN)
+			NR.regen_rate = variable_cost * 0.1
 			organ.organ_remove_verb(/mob/living/carbon/human/proc/nanite_regen)
 	else
 		to_chat(src, "Assigning more nanites to repairing your body wouldn't give you a boost in regeneration rate.")
@@ -30,17 +36,23 @@ List of powers in this page :
 // Give the user a perk that make him move faster
 /mob/living/carbon/human/proc/nanite_muscle()
 	set category = "Nanogate Powers"
-	set name = "Nanite Augment - Nanofiber Muscles (5)"
-	set desc = "Spend some of your nanites to create nanite muscle to allow you to move faster."
+	set name = "Nanite Augment - Nanofiber Muscles" //0.06speedup per nanite point
+	set desc = "Spend a variable amount of your nanites to create nanite muscle to allow you to move faster."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
 	if(!organ)
 		return
 
 	if(!stats.getPerk(PERK_NANITE_MUSCLE)) // Do they already have the perk?
-		if(organ.pay_power_cost(5))
+		var/variable_cost = input("How many points would you like to spend on nanofiber musculuature? (0.06 speedup per point, max of 10)", "Assign nanites") as null|num
+		if((variable_cost > 10) || (variable_cost < 1))
+			to_chat(src, "Invalid nanite amount!")
+			return
+		if(organ.pay_power_cost(variable_cost))
 			to_chat(src, "You permanently assign some of your nanites to enhancing your physical movement.")
 			stats.addPerk(PERK_NANITE_MUSCLE)
+			var/datum/perk/nanite_power/nanite_muscle/NM = stats.getPerk(PERK_NANITE_MUSCLE)
+			NM.regen_rate = variable_cost * 0.1
 			organ.organ_remove_verb(/mob/living/carbon/human/proc/nanite_muscle)
 	else
 		to_chat(src, "Assigning more nanites to enhance your muscles wouldn't offer any benefit.")
@@ -49,7 +61,7 @@ List of powers in this page :
 /mob/living/carbon/human/proc/nanite_armor()
 	set category = "Nanogate Powers"
 	set name = "Nanite Augment - Nanite Skin-Weave (3)"
-	set desc = "Spend some of your nanites to create nanite weave mesh to protect your body."
+	set desc = "Spend a variable amount of your nanites to create subdermal nanite weave to protect your body."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
 	if(!organ)
