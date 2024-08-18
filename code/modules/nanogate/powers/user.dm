@@ -127,63 +127,6 @@ List of powers in this page :
 	if(!organ)
 		return
 
-		// Add illegal shit here
-	var/list/blacklisted_types = list(	/obj/item/tool_upgrade/reinforcement,
-						/obj/item/tool_upgrade/productivity,
-						/obj/item/tool_upgrade/refinement,
-						/obj/item/tool_upgrade/augment,
-						/obj/item/tool_upgrade/armor,
-						/obj/item/tool_upgrade/augment/holding_tank,
-						/obj/item/tool_upgrade/augment/ai_tool,
-						/obj/item/tool_upgrade/augment/ai_tool_excelsior,
-						/obj/item/tool_upgrade/augment/repair_nano,
-						/obj/item/tool_upgrade/augment/randomizer,
-						/obj/item/tool_upgrade/augment/holy_oils,
-						/obj/item/tool_upgrade/augment/crusader_seal,
-						/obj/item/tool_upgrade/artwork_tool_mod,
-						/obj/item/tool_upgrade/augment/sanctifier,	//Has biomatter, sadly nanites are not able to use that
-						/obj/item/gun_upgrade/barrel,
-						/obj/item/gun_upgrade/muzzle,
-						/obj/item/gun_upgrade/mechanism,
-						/obj/item/gun_upgrade/trigger,
-						/obj/item/gun_upgrade/magwell,
-						/obj/item/gun_upgrade/scope,
-						/obj/item/gun_upgrade/underbarrel,
-						/obj/item/gun_upgrade/barrel/forged,
-						/obj/item/gun_upgrade/barrel/bore,
-						/obj/item/gun_upgrade/barrel/excruciator,	//Sadly has biomatter
-						/obj/item/gun_upgrade/mechanism/upgrade_kit,
-						/obj/item/gun_upgrade/mechanism/clock_block,//Brass and unknown tech
-						/obj/item/gun_upgrade/trigger/boom,			//Illegal
-						/obj/item/gun_upgrade/scope/watchman,
-						/obj/item/gun_upgrade/mechanism/glass_widow,
-						/obj/item/gun_upgrade/mechanism/greyson_master_catalyst,
-						/obj/item/gun_upgrade/mechanism/brass_kit,
-						/obj/item/gun_upgrade/trigger/honker,
-						/obj/item/gun_upgrade/mechanism/bikehorn,
-						/obj/item/gun_upgrade/mechanism/faulty_trapped,
-						/obj/item/gun_upgrade/trigger/faulty,
-						/obj/item/gun_upgrade/barrel/faulty,
-						/obj/item/gun_upgrade/muzzle/faulty,
-						/obj/item/gun_upgrade/mechanism/faulty,
-						/obj/item/gun_upgrade/scope/faulty
-	)
-
-	var/list/choice_mods = list()
-	// add new paths into the format of + subtypesof(XXX)
-	var/list/types = subtypesof(/obj/item/tool_upgrade) + subtypesof(/obj/item/gun_upgrade)
-	for (var/mod in types)
-		if (mod in blacklisted_types)
-			continue
-		var/obj/O = mod
-		choice_mods[initial(O.name)] = mod
-
-	var/obj/item/choice = input(src, "Which modification do you want?", "Mod Choice", null) as null|anything in choice_mods
-
-	if(choice && organ.pay_power_cost(1))
-		to_chat(src, "You permanently assign some of your nanites to create a modification.")
-		choice = choice_mods[choice]
-		put_in_hands(new choice(get_turf(src)))
 
 // Give the user a perk that allow them to create an ammo box every 30 minutes
 /mob/living/carbon/human/proc/nanite_ammo()

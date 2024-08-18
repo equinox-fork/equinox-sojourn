@@ -200,3 +200,104 @@
 
 	anti_cheat = FALSE
 	return ..()
+
+
+
+/datum/perk/nanite_power/nanite_ammo
+	name = "Munition Fabrication"
+	desc = "You programmed and set aside a specific subset of nanites whose singular purpose is to reconstruct themselves into ammunition boxes. The process is quite intensive and requires \
+	fifteen minutes between uses."
+	icon_state = "munitionfabrication"
+	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
+	active = FALSE
+	passivePerk = FALSE
+	var/cooldown = 15 MINUTES
+	var/anti_cheat = FALSE //No more spaming...
+
+/datum/perk/nanite_power/nanite_ammo/activate()
+	if(world.time < cooldown_time)
+		to_chat(usr, SPAN_NOTICE("Your nanites didn't ready an ammo box yet."))
+		return FALSE
+
+	if(anti_cheat)
+		to_chat(holder, "Something feels cold.")
+		return
+	anti_cheat = TRUE
+	// Add illegal shit here
+	var/list/blacklisted_types = list(	/obj/item/tool_upgrade/reinforcement,
+						/obj/item/tool_upgrade/productivity,
+						/obj/item/tool_upgrade/refinement,
+						/obj/item/tool_upgrade/augment,
+						/obj/item/tool_upgrade/armor,
+						/obj/item/tool_upgrade/augment/holding_tank,
+						/obj/item/tool_upgrade/augment/ai_tool,
+						/obj/item/tool_upgrade/augment/ai_tool_excelsior,
+						/obj/item/tool_upgrade/augment/repair_nano,
+						/obj/item/tool_upgrade/augment/randomizer,
+						/obj/item/tool_upgrade/augment/holy_oils,
+						/obj/item/tool_upgrade/augment/crusader_seal,
+						/obj/item/tool_upgrade/artwork_tool_mod,
+						/obj/item/tool_upgrade/augment/sanctifier,	//Has biomatter, sadly nanites are not able to use that
+						/obj/item/gun_upgrade/barrel,
+						/obj/item/gun_upgrade/muzzle,
+						/obj/item/gun_upgrade/mechanism,
+						/obj/item/gun_upgrade/trigger,
+						/obj/item/gun_upgrade/magwell,
+						/obj/item/gun_upgrade/scope,
+						/obj/item/gun_upgrade/underbarrel,
+						/obj/item/gun_upgrade/barrel/forged,
+						/obj/item/gun_upgrade/barrel/bore,
+						/obj/item/gun_upgrade/barrel/excruciator,	//Sadly has biomatter
+						/obj/item/gun_upgrade/mechanism/upgrade_kit,
+						/obj/item/gun_upgrade/mechanism/clock_block,//Brass and unknown tech
+						/obj/item/gun_upgrade/trigger/boom,			//Illegal
+						/obj/item/gun_upgrade/scope/watchman,
+						/obj/item/gun_upgrade/mechanism/glass_widow,
+						/obj/item/gun_upgrade/mechanism/greyson_master_catalyst,
+						/obj/item/gun_upgrade/mechanism/brass_kit,
+						/obj/item/gun_upgrade/trigger/honker,
+						/obj/item/gun_upgrade/mechanism/bikehorn,
+						/obj/item/gun_upgrade/mechanism/faulty_trapped,
+						/obj/item/gun_upgrade/trigger/faulty,
+						/obj/item/gun_upgrade/barrel/faulty,
+						/obj/item/gun_upgrade/muzzle/faulty,
+						/obj/item/gun_upgrade/mechanism/faulty,
+						/obj/item/gun_upgrade/scope/faulty
+	)
+
+	var/list/choice_mods = list()
+	// add new paths into the format of + subtypesof(XXX)
+	var/list/types = subtypesof(/obj/item/tool_upgrade) + subtypesof(/obj/item/gun_upgrade)
+	for (var/mod in types)
+		if (mod in blacklisted_types)
+			continue
+		var/obj/O = mod
+		choice_mods[initial(O.name)] = mod
+
+	var/obj/item/choice = input(src, "Which modification do you want?", "Mod Choice", null) as null|anything in choice_mods
+
+	if(choice && organ.pay_power_cost(1))
+		to_chat(src, "You permanently assign some of your nanites to create a modification.")
+		choice = choice_mods[choice]
+		put_in_hands(new choice(get_turf(src)))
+
+
+	var/list/ammo_boxes = list()
+	for(var/ammo in subtypesof(/obj/item/ammo_magazine/ammobox))
+		if (ammo in blacklisted_types)
+			continue
+		var/obj/O = ammo
+		ammo_boxes[initial(O.name)] = ammo
+
+	var/obj/item/choice = input(usr, "Which type of ammo do you want?", "Ammo Choice", null) as null|anything in ammo_boxes
+
+	if (!choice)	// user can cancel
+		anti_cheat = FALSE
+		return
+
+	choice = ammo_boxes[choice]
+	usr.put_in_hands(new choice(get_turf(usr)))
+	cooldown_time = world.time + cooldown
+
+	anti_cheat = FALSE
+	return ..()
