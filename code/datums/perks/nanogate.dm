@@ -49,15 +49,15 @@
 	mesh weave shield just before a strike connects."
 	icon_state = "naniteskinweave"
 	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
+	var/max_health_adjust = 0
 
-/datum/perk/nanite_power/nanite_armor/assign(mob/living/L)
-	..()
-	holder.maxHealth += 40
-	holder.health += 40
+/datum/perk/nanite_power/nanite_armor/proc/adjustMaxHP()
+	holder.maxHealth += max_health_adjust
+	holder.health += max_health_adjust
 
 /datum/perk/nanite_power/nanite_armor/remove()
-	holder.maxHealth -= 40
-	holder.health -= 40
+	holder.maxHealth -= max_health_adjust
+	holder.health -= max_health_adjust
 	..()
 
 /datum/perk/nanite_power/nanite_metal_drinker
@@ -73,17 +73,17 @@
 	passivePerk = FALSE
 	var/chem_id = "nanites"
 	var/chem_amount = 15
-	var/anti_cheat = FALSE //Used to prevent multy stacking clicking
+	var/cooldown_amount = 15 MINUTES
 
 /datum/perk/nanite_power/nanite_chem/activate()
 	..()
-	if(anti_cheat)
-		to_chat(holder, "Something feels cold.")
-		return
-	anti_cheat = TRUE
+	if(world.time < cooldown_time)
+		to_chat(usr, SPAN_NOTICE("Your nanite reserve is still refilling, you'll need to wait longer."))
+		return FALSE
+	cooldown_time = world.time + cooldown_amount
 	to_chat(holder, "You feel a sudden rush as the pre-programed nanites enter your bloodstream.")
 	holder.reagents.add_reagent(chem_id, chem_amount)
-	spawn(20) holder.stats.removePerk(src.type) // Delete the perk
+
 
 //Unused, because this kind of nanite doesn't exist?!?!
 /datum/perk/nanite_power/nanite_chem/implantoids
@@ -124,12 +124,12 @@
 /datum/perk/nanite_power/nanite_ammo
 	name = "Munition Fabrication"
 	desc = "You programmed and set aside a specific subset of nanites whose singular purpose is to reconstruct themselves into ammunition boxes. The process is quite intensive and requires \
-	half an hour between uses."
+	fifteen minutes between uses."
 	icon_state = "munitionfabrication"
 	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
 	active = FALSE
 	passivePerk = FALSE
-	var/cooldown = 30 MINUTES
+	var/cooldown = 15 MINUTES
 	var/anti_cheat = FALSE //No more spaming...
 
 /datum/perk/nanite_power/nanite_ammo/activate()
@@ -164,8 +164,6 @@
 						/obj/item/ammo_magazine/ammobox/rifle_75_small/hv,
 						/obj/item/ammo_magazine/ammobox/rifle_75_small/scrap,
 						/obj/item/ammo_magazine/ammobox/laser_223/box,
-						//obj/item/ammo_magazine/ammobox/laser_223/box/ap,
-						//obj/item/ammo_magazine/ammobox/laser_223/box/lethal,
 						/obj/item/ammo_magazine/ammobox/kurtz_50/hv,
 						/obj/item/ammo_magazine/ammobox/kurtz_50/laser,
 						/obj/item/ammo_magazine/ammobox/antim, //Unlike the small box holds 15
