@@ -413,10 +413,8 @@
 
 	if(!damage || !istype(user))
 		return
-	if(damagetype == BRUTE)
-		adjustBruteLoss(damage)
-	else
-		adjustFireLoss(damage)
+	
+	damage_through_armor(damage, damtype, BP_CHEST, ARMOR_MELEE, user.armor_divisor, sharp=sharp, edge=edge)
 	user.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src.name] ([src.ckey])</font>")
 	src.attack_log += text("\[[time_stamp()]\] <font color='orange'>was attacked by [user.name] ([user.ckey])</font>")
 	src.visible_message(SPAN_DANGER("[user] has [attack_message] [src]!"))
