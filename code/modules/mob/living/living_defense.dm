@@ -418,7 +418,22 @@
 	if(isliving(user))
 		var/mob/living/L = user
 		used_divisor = L.armor_divisor
-	damage_through_armor(damage, damagetype, BP_CHEST, ARMOR_MELEE, used_divisor, sharp=sharp, edge=edge)
+	var/attack_BP = BP_CHEST
+	if(prob(20))
+		switch(rand(1,6))
+			if(1)
+				attack_BP = BP_L_LEG
+			if(2)
+				attack_BP = BP_R_LEG
+			if(3)
+				attack_BP = BP_R_ARM
+			if(4)
+				attack_BP = BP_L_ARM
+			if(5)
+				attack_BP = BP_GROIN
+			if(6)
+				attack_BP = BP_HEAD
+	damage_through_armor(damage, damagetype, attack_BP, ARMOR_MELEE, used_divisor, sharp=sharp, edge=edge)
 	user.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src.name] ([src.ckey])</font>")
 	src.attack_log += text("\[[time_stamp()]\] <font color='orange'>was attacked by [user.name] ([user.ckey])</font>")
 	src.visible_message(SPAN_DANGER("[user] has [attack_message] [src]!"))
