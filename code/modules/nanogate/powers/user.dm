@@ -135,7 +135,7 @@ List of powers in this page :
 			to_chat(src, "You permanently assign some of your nanites to create tool and gun mods.")
 			stats.addPerk(PERK_NANITE_MODS)
 			var/datum/perk/nanite_power/nanite_mods/NA = stats.getPerk(PERK_NANITE_MODS)
-			if(variable_cost > 2)
+			if(variable_cost == 3)
 				NA.cooldown = NA.cooldown - 10 MINUTES
 			organ.organ_remove_verb(/mob/living/carbon/human/proc/nanite_mod)
 
