@@ -124,7 +124,7 @@
 /datum/perk/nanite_power/nanite_ammo
 	name = "Munition Fabrication"
 	desc = "You programmed and set aside a specific subset of nanites whose singular purpose is to reconstruct themselves into ammunition boxes. The process is quite intensive and requires \
-	fifteen minutes between uses."
+	up to fifteen minutes between uses."
 	icon_state = "munitionfabrication"
 	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
 	active = FALSE
@@ -203,24 +203,23 @@
 
 
 
-/datum/perk/nanite_power/nanite_ammo
-	name = "Munition Fabrication"
-	desc = "You programmed and set aside a specific subset of nanites whose singular purpose is to reconstruct themselves into ammunition boxes. The process is quite intensive and requires \
-	fifteen minutes between uses."
+/datum/perk/nanite_power/nanite_mods
+	name = "Modification Fabrication"
+	desc = "You programmed and set aside a specific subset of nanites whose singular purpose is to reconstruct themselves into tool modifications. The process is quite intensive and requires \
+	an hour between uses."
 	icon_state = "munitionfabrication"
 	gain_text = "You feel a dull ache as your nanogate releases newly configured nanites into your body."
 	active = FALSE
 	passivePerk = FALSE
-	var/cooldown = 15 MINUTES
+	var/cooldown = 60 MINUTES
 	var/anti_cheat = FALSE //No more spaming...
 
-/datum/perk/nanite_power/nanite_ammo/activate()
+/datum/perk/nanite_power/nanite_mods/activate()
 	if(world.time < cooldown_time)
-		to_chat(usr, SPAN_NOTICE("Your nanites didn't ready an ammo box yet."))
+		to_chat(usr, SPAN_NOTICE("Your nanites aren't ready to produce another modification yet."))
 		return FALSE
 
 	if(anti_cheat)
-		to_chat(holder, "Something feels cold.")
 		return
 	anti_cheat = TRUE
 	// Add illegal shit here
@@ -276,27 +275,11 @@
 
 	var/obj/item/choice = input(src, "Which modification do you want?", "Mod Choice", null) as null|anything in choice_mods
 
-	if(choice && organ.pay_power_cost(1))
-		to_chat(src, "You permanently assign some of your nanites to create a modification.")
+	if(choice)
+		to_chat(src, "You assign some of your nanites to create a modification.")
 		choice = choice_mods[choice]
 		put_in_hands(new choice(get_turf(src)))
 
-
-	var/list/ammo_boxes = list()
-	for(var/ammo in subtypesof(/obj/item/ammo_magazine/ammobox))
-		if (ammo in blacklisted_types)
-			continue
-		var/obj/O = ammo
-		ammo_boxes[initial(O.name)] = ammo
-
-	var/obj/item/choice = input(usr, "Which type of ammo do you want?", "Ammo Choice", null) as null|anything in ammo_boxes
-
-	if (!choice)	// user can cancel
-		anti_cheat = FALSE
-		return
-
-	choice = ammo_boxes[choice]
-	usr.put_in_hands(new choice(get_turf(usr)))
 	cooldown_time = world.time + cooldown
 
 	anti_cheat = FALSE

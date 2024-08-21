@@ -117,7 +117,6 @@ List of powers in this page :
 		organ.organ_remove_verb(/mob/living/carbon/human/proc/nanite_chem)
 
 // Give the user a tool or gun mod
-//TODO:finish
 /mob/living/carbon/human/proc/nanite_mod()
 	set category = "Nanogate Powers"
 	set name = "Nanite Augment - Modification Fabricator"
@@ -126,6 +125,20 @@ List of powers in this page :
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
 	if(!organ)
 		return
+
+	if(!stats.getPerk(PERK_NANITE_MODS)) // Do they already have the perk?
+		var/variable_cost = input("How many points would you like to spend on a modification nanoforge? (60 minutes cooldown, decreased by 10 for every point above 2, cap of 3)", "Assign nanites") as null|num
+		if((variable_cost > 3) || (variable_cost < 2))
+			to_chat(src, "Invalid nanite amount!")
+			return
+		if(organ.pay_power_cost(variable_cost))
+			to_chat(src, "You permanently assign some of your nanites to create ammunition boxes.")
+			stats.addPerk(PERK_NANITE_MODS)
+			var/datum/perk/nanite_power/nanite_mods/NA = stats.getPerk(PERK_NANITE_MODS)
+			if(variable_cost > 2)
+				NA.cooldown = NA.cooldown - 10 MINUTES
+			organ.organ_remove_verb(/mob/living/carbon/human/proc/nanite_mod)
+
 
 
 // Give the user a perk that allow them to create an ammo box every 30 minutes
