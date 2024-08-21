@@ -273,14 +273,13 @@
 		var/obj/O = mod
 		choice_mods[initial(O.name)] = mod
 
-	var/obj/item/choice = input(src, "Which modification do you want?", "Mod Choice", null) as null|anything in choice_mods
+	var/obj/item/choice = input(usr, "Which modification do you want?", "Mod Choice", null) as null|anything in choice_mods
 
 	if(choice)
 		to_chat(src, "You assign some of your nanites to create a modification.")
 		choice = choice_mods[choice]
 		usr.put_in_hands(new choice(get_turf(src)))
-
-	cooldown_time = world.time + cooldown
+		cooldown_time = world.time + cooldown
 
 	anti_cheat = FALSE
 	return ..()

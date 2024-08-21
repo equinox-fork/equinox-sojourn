@@ -36,7 +36,7 @@ List of powers in this page :
 // Give the user a perk that make him move faster
 /mob/living/carbon/human/proc/nanite_muscle()
 	set category = "Nanogate Powers"
-	set name = "Nanite Augment - Nanofiber Muscles" //0.06speedup per nanite point
+	set name = "Nanofiber Muscles" //0.06speedup per nanite point
 	set desc = "Spend a variable amount of your nanites to create nanite muscle to allow you to move faster."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
@@ -60,7 +60,7 @@ List of powers in this page :
 // Give the user a perk that reduce incoming damage
 /mob/living/carbon/human/proc/nanite_armor()
 	set category = "Nanogate Powers"
-	set name = "Nanite Augment - Nanite Skin-Weave"
+	set name = "Nanite Skin-Weave"
 	set desc = "Spend a variable amount of your nanites to create subdermal nanite weave to protect your body."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
@@ -85,7 +85,7 @@ List of powers in this page :
 // Allow the user to inject themselves with a chosen nanite.
 /mob/living/carbon/human/proc/nanite_chem()
 	set category = "Nanogate Powers"
-	set name = "Nanite Augment - Nanite Refabrication"
+	set name = "Nanite Refabrication"
 	set desc = "Convert some of your nanites into more specialized nanites, which slowly accumulate over time. Only works for organics."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
@@ -119,7 +119,7 @@ List of powers in this page :
 // Give the user a tool or gun mod
 /mob/living/carbon/human/proc/nanite_mod()
 	set category = "Nanogate Powers"
-	set name = "Nanite Augment - Modification Fabricator"
+	set name = "Modification Fabricator"
 	set desc = "Spend some of your nanites to create a modification fabricator, which can construct tool and gun mods over a long period of time."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
@@ -132,7 +132,7 @@ List of powers in this page :
 			to_chat(src, "Invalid nanite amount!")
 			return
 		if(organ.pay_power_cost(variable_cost))
-			to_chat(src, "You permanently assign some of your nanites to create ammunition boxes.")
+			to_chat(src, "You permanently assign some of your nanites to create tool and gun mods.")
 			stats.addPerk(PERK_NANITE_MODS)
 			var/datum/perk/nanite_power/nanite_mods/NA = stats.getPerk(PERK_NANITE_MODS)
 			if(variable_cost > 2)
@@ -144,7 +144,7 @@ List of powers in this page :
 // Give the user a perk that allow them to create an ammo box every 30 minutes
 /mob/living/carbon/human/proc/nanite_ammo()
 	set category = "Nanogate Powers"
-	set name = "Nanite Augment - Munition Fabrication"
+	set name = "Munition Fabrication"
 	set desc = "Spend some of your nanites to create an ammunition forge. More nanite assignment means faster recharge time."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
@@ -190,7 +190,7 @@ List of powers in this page :
 // Spends points for increased food storage
 /mob/living/carbon/human/proc/nanite_food_storage()
 	set category = "Nanogate Powers"
-	set name = "Nanite Augment - Food Banking (1)"
+	set name = "Nanite Augment - Foodbanking (1)"
 	set desc = "Spend some of your nanites to allow the storage of additional nutrition on your body."
 
 	var/obj/item/organ/internal/nanogate/organ = first_organ_by_type(/obj/item/organ/internal/nanogate)
