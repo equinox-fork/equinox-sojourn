@@ -52,7 +52,7 @@ List of powers in this page :
 			to_chat(src, "You permanently assign some of your nanites to enhancing your physical movement.")
 			stats.addPerk(PERK_NANITE_MUSCLE)
 			var/datum/perk/nanite_power/nanite_muscle/NM = stats.getPerk(PERK_NANITE_MUSCLE)
-			NM.regen_rate = variable_cost * 0.1
+			NM.speedup = variable_cost * 0.06
 			organ.organ_remove_verb(/mob/living/carbon/human/proc/nanite_muscle)
 	else
 		to_chat(src, "Assigning more nanites to enhance your muscles wouldn't offer any benefit.")

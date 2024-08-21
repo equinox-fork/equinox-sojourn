@@ -278,7 +278,7 @@
 	if(choice)
 		to_chat(src, "You assign some of your nanites to create a modification.")
 		choice = choice_mods[choice]
-		put_in_hands(new choice(get_turf(src)))
+		usr.put_in_hands(new choice(get_turf(src)))
 
 	cooldown_time = world.time + cooldown
 
