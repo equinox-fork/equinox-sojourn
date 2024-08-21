@@ -168,9 +168,10 @@
 
 /obj/item/projectile/multiply_projectile_damage(newmult)
 	for(var/i in damage_types)
-		damage_types[i] *= i == HALLOSS ? 1 : newmult
+		if(i != HALLOSS)
+			damage_types[i] *= newmult
 
-/obj/item/projectile/multiply_projectile_damage(newmult)
+/obj/item/projectile/multiply_projectile_agony(newmult)
 	if(HALLOSS in damage_types)
 		damage_types[HALLOSS] *= newmult
 
