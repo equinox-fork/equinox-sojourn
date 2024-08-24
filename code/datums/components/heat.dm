@@ -1,6 +1,6 @@
 /datum/component/heat
 	var/currentHeat = 0
-	var/heatThresholdSpecial //set this value t something above overheat+heatperfire if you dont want to use it
+	var/heatThresholdSpecial //set this value to something above overheat+heatperfire if you dont want to use it
 	var/overheatThreshold = 100
 	var/lastFiredTick
 	var/heatPerFire
